@@ -50,7 +50,7 @@ public class App {
 			throw new IOException("Undefined number of shadows");
 
 		int k = (Integer) arguments.get("-k");
-		int n;
+		int n = 0;
 		
 		if(k<2)
 			throw new IOException("Invalid number of shadows");
@@ -62,32 +62,11 @@ public class App {
 		}
 		
 		if(isReception) {
-
-		} else {
 			
+		} else {
+			if(n<2 || k>n)
+				throw new IOException("Invvalid scheme(k,n)");
 		}
 		
-		
-		
-//		if (arguments.get("-s") == null)
-//			throw new IOException("Missing Search Strategy");
-//		else {
-//			String searchStrategy = (String) arguments.get("-s");
-//			if (!SearchStrategy.contains(searchStrategy))
-//				throw new IOException("Invalid strategy.");
-//
-//			strategy = SearchStrategy.valueOf(searchStrategy);
-//		}
-//
-//		if (arguments.get("-c") == null)
-//			throw new IOException("Missing cut condition");
-//		else
-//			cut = new Integer((String) arguments.get("-c"));
-//
-//		if (arguments.get("-h") == null)
-//			throw new IOException("Missing heuristic");
-//		else
-//			hCode = new Integer((String) arguments.get("-h"));
-//
 	}
 }
