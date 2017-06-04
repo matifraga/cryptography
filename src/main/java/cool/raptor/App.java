@@ -1,88 +1,57 @@
 package cool.raptor;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class App {
-	public static void main(String[] args) throws IOException {
-		
-		Map<String, Object> arguments = new HashMap<>();
+    public static void main(String[] args) {
 
-		for (int i = 0; i < args.length; i++) {
-			String item = args[i];
+        Map<String, Object> arguments = new HashMap<>();
 
-			if (item.charAt(0) != '-')
-				throw new IOException("Input error");
-
-			if ((i + 1) < args.length) { // not the last item
-				String next = args[i + 1];
-				if (next.charAt(0) == '-')
-					arguments.put(item, true);
-				else {
-					arguments.put(item, next);
-					i += 1;
-				}
-			}
-		}
-
-		if ((arguments.get("-d") == null && arguments.get("-r") == null) || (arguments.get("-d") != null && arguments.get("-r") != null))
-			throw new IOException("Undifined Distribution/Reception");
-		
-		boolean isRecovery = arguments.getOrDefault("-r", false) == Boolean.TRUE;
-	
-		StringBuilder fileName = new StringBuilder();
-		StringBuilder path = new StringBuilder();
-		File files[] = null;
-		
-		if(arguments.get("-dir") != null) {
-			path.append((String) arguments.get("-dir"));
-			path.append(File.separator);
-			
-			files = new File((String) arguments.get("-dir")).listFiles();
-		} else {	
-			files = new File(".").listFiles();
-		}
-		
-		if(files == null || files.length == 0)
-			throw new IOException("Invalid directory");
-				
-		if (arguments.get("-secret") == null) 
-            throw new IOException("Undefined file name");
-        else {
-            fileName.append((String) arguments.get("-secret"));
-            if (!fileName.toString().endsWith(".bmp")) 
-                throw new IOException("Invalid file name");
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("-")) {
+                if ((i + 1) < args.length) {
+                    if (args[i + 1].startsWith("-")) {
+                        arguments.put(args[i].substring(1), Boolean.TRUE);
+                    } else {
+                        arguments.put(args[i].substring(1), args[++i]);
+                    }
+                } else {
+                    arguments.put(args[i].substring(1), Boolean.TRUE);
+                }
+            } else {
+                throw new IllegalArgumentException("Input error");
+            }
         }
-		
-		if(arguments.get("-k") == null) 
-			throw new IOException("Undefined number of shadows");
 
-		int k = Integer.parseInt(((String) arguments.get("-k")));
-		int n = 0;
-		
-		if(k<2)
-			throw new IOException("Invalid number of shadows");
-		
-		for(File f: files) {
-			if(!f.toString().endsWith(".bmp"))
-				throw new IOException("Invalid file extension");
-		}
-	
-		if(arguments.containsKey("-n")) {
-			n = (Integer) arguments.get("-n");
-		} else {
-			n = files.length;
-		}
-		
-		if(isRecovery) {
-			
-		} else {
-			if(n<2 || k>n)
-				throw new IOException("Invvalid scheme(k,n)");
-			
-			
-		}
-	}
+        if (!arguments.containsKey("d") && !arguments.containsKey("r")) throw new IllegalArgumentException("Undefined Distribution/Reception");
+        if (arguments.containsKey("d") && arguments.containsKey("r")) throw new IllegalArgumentException("Undefined Distribution/Reception");
+        if (!arguments.containsKey("secret")) throw new IllegalArgumentException("Undefined secret file name");
+        if (!arguments.containsKey("k")) throw new IllegalArgumentException("Undefined number of shadows");
+
+        String mode = arguments.containsKey("r") ? "r" : "d";
+        String secret = (String) arguments.get("secret");
+        Integer k = Integer.valueOf((String) arguments.get("k"));
+        String dir = arguments.getOrDefault("dir", ".") + File.separator;
+        List<File> files = Arrays.asList(new File(dir).listFiles()).stream().filter(file -> file.getName().endsWith(".bmp")).collect(Collectors.toList());
+        Integer n = Integer.valueOf((String) arguments.getOrDefault("n", String.valueOf(files.size())));
+
+        if (!secret.endsWith(".bmp")) throw new IllegalArgumentException("Invalid secret image");
+        if (n < 2) throw new IllegalArgumentException("Invalid number of images to distribute to");
+        if (k < 2 || k > n) throw new IllegalArgumentException("Invalid scheme(k,n)");
+
+        Algorithm algorithm;
+
+        if (mode.equals("r")) {
+            algorithm = new Recovery();
+        } else {
+            algorithm = new Distribution(new File(secret), k, n, files);
+        }
+
+        algorithm.execute();
+    }
 }
