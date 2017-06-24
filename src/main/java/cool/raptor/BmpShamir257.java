@@ -100,6 +100,7 @@ public class BmpShamir257 implements Shamir<BmpImage> {
                     System.out.println("secreto: " + secretByte);
                 }
                 //System.out.println(secretByte);
+                secretByte = secretByte | (secretByte << 8) | (secretByte << 16);
                 secret.image.setRgb888Pixel(i,j,secretByte);
             }
         }
