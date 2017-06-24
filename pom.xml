@@ -21,11 +21,6 @@
             <artifactId>BMP-IO</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.ejml</groupId>
-            <artifactId>ejml-simple</artifactId>
-            <version>0.31</version>
-        </dependency>
     </dependencies>
 
     <build>

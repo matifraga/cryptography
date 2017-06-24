@@ -33,7 +33,7 @@ import java.io.InputStream;
 public final class BmpReader {
 
     public static BmpImage read(File file) throws IOException {
-        InputStream inputStream = new FileInputStream(file.getName());
+        InputStream inputStream = new FileInputStream(file.getPath());
         BmpImage image = read(inputStream);
         inputStream.close();
         return image;
@@ -128,7 +128,7 @@ public final class BmpReader {
 				byte[] entry = new byte[4];
 				in1.readFully(entry);
 				palette[i] = (entry[2] & 0xFF) << 16 | (entry[1] & 0xFF) << 8 | (entry[0] & 0xFF);
-                System.out.printf("%x\n", palette[i]);
+                //System.out.printf("%x\n", palette[i]);
             }
 
 			if (compression == 0)

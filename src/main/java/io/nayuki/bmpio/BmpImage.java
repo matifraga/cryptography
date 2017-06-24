@@ -36,5 +36,10 @@ public final class BmpImage {
 		horizontalResolution = 3780;  // 96 DPI
 		verticalResolution = 3780;  // 96 DPI
 	}
+	public BmpImage(int width, int height) {
+        horizontalResolution = 3780;  // 96 DPI
+        verticalResolution = 3780;  // 96 DPI
+        image = new BufferedRgb888Image(width,height);
+    }
 
 }
