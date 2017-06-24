@@ -36,10 +36,18 @@ public final class BmpImage {
 		horizontalResolution = 3780;  // 96 DPI
 		verticalResolution = 3780;  // 96 DPI
 	}
-	public BmpImage(int width, int height) {
+	public BmpImage(int width, int height, int[] palette) {
         horizontalResolution = 3780;  // 96 DPI
         verticalResolution = 3780;  // 96 DPI
-        image = new BufferedRgb888Image(width,height);
+        image = new BufferedPalettedRgb888Image(width,height, palette);
+    }
+
+    public int[] getPalette() {
+	    return ((BufferedPalettedRgb888Image)image).getPalette();
+    }
+
+    public int getPixel(int x, int y) {
+	    return ((BufferedPalettedRgb888Image)image).getPixel(x,y);
     }
 
 }

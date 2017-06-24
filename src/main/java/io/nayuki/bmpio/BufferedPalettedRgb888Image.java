@@ -56,4 +56,13 @@ public final class BufferedPalettedRgb888Image extends AbstractRgb888Image {
 		pixels[y * width + x] = colorIndex;
 	}
 
+    public int[] getPalette() {
+        return palette;
+    }
+
+    public int getPixel(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height)
+            throw new IndexOutOfBoundsException();
+        return pixels[y * width + x] & 0xFF;
+    }
 }

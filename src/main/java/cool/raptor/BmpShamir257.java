@@ -27,11 +27,12 @@ public class BmpShamir257 implements Shamir<BmpImage> {
 
         int width = secretImage.image.getWidth();
         int height = secretImage.image.getHeight();
+        int[] palette = secretImage.getPalette();
 
         //System.out.println("width: " + width + " height: " + height);
         Map<Integer, BmpImage> shades = new HashMap<>();
         for (int s = 1; s <= n; s++) {
-            shades.put(s, new BmpImage(width, height));
+            shades.put(s, new BmpImage(width, height, palette));
         }
 
         Random rand = new Random();
@@ -41,7 +42,7 @@ public class BmpShamir257 implements Shamir<BmpImage> {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 //System.out.println("x: " + i + "y: " + j);
-                int secretByte = secretImage.image.getRgb888Pixel(i, j) & 0xff;
+                int secretByte = secretImage.getPixel(i, j);
                 //secretByte >>= 8;
                 coefs[0] = secretByte;
                 boolean overflow;
@@ -77,19 +78,18 @@ public class BmpShamir257 implements Shamir<BmpImage> {
     public BmpImage join(Map<Integer, BmpImage> shades) {
         int width = shades.get(1).image.getWidth();
         int height = shades.get(1).image.getHeight();
-
-        BmpImage secret = new BmpImage(width, height);
+        int[] palette = shades.get(1).getPalette();
+        BmpImage secret = new BmpImage(width, height, palette);
 
         System.out.println("width: " + width + " height: " + height);
         List<Integer> xValues = shades.keySet().stream().collect(Collectors.toList());
         System.out.println(xValues);
-        int[] coefs = new int[k];
         Map<Integer, Integer> points = new HashMap<>();
         int secretByte;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 for (int s: shades.keySet()) {
-                    points.put(s,shades.get(s).image.getRgb888Pixel(i,j));
+                    points.put(s,shades.get(s).getPixel(i,j));
                 }
                 if(i==1&& j==1) {
                     points.entrySet()
@@ -100,7 +100,6 @@ public class BmpShamir257 implements Shamir<BmpImage> {
                     System.out.println("secreto: " + secretByte);
                 }
                 //System.out.println(secretByte);
-                secretByte = secretByte | (secretByte << 8) | (secretByte << 16);
                 secret.image.setRgb888Pixel(i,j,secretByte);
             }
         }
