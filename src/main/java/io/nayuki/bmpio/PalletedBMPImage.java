@@ -24,43 +24,43 @@
 
 package io.nayuki.bmpio;
 
-
-public final class BufferedPalettedRgb888Image extends BmpImage {
+public class PalletedBMPImage extends BMPImage {
 
 	private int[] palette;
 	private byte[] pixels;
 
-	public BufferedPalettedRgb888Image(int width, int height, int[] palette) {
+	public PalletedBMPImage(int width, int height, int[] palette) {
 		super(width, height);
-		if (width > Integer.MAX_VALUE / height)
-			throw new IllegalArgumentException("Image dimensions too large");
+		if (width > Integer.MAX_VALUE / height) {
+            throw new IllegalArgumentException("Image dimensions too large");
+        }
+        this.pixels = new byte[width * height];
 		this.palette = palette.clone();
-		pixels = new byte[width * height];
 	}
 
-	public int getPixel(int x, int y) {
-		if (x < 0 || x >= width || y < 0 || y >= height)
-			throw new IndexOutOfBoundsException();
-		return palette[pixels[y * width + x] & 0xFF];
-	}
-
-    public void setPixel(int x, int y, int content) {
-        setRgb888Pixel(x, y, (byte) content);
-    }
-
-    private void setRgb888Pixel(int x, int y, byte colorIndex) {
-		if (x < 0 || x >= width || y < 0 || y >= height || (colorIndex & 0xFF) >= palette.length)
-			throw new IndexOutOfBoundsException();
-		pixels[y * width + x] = colorIndex;
-	}
-
-    public int[] getPalette() {
-        return palette;
-    }
-
-    /*public int getPixel(int x, int y) {
-        if (x < 0 || x >= width || y < 0 || y >= height)
+    public int getColor(int x, int y) {
+        if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) {
             throw new IndexOutOfBoundsException();
-        return pixels[y * width + x] & 0xFF;
-    }*/
+        }
+        return palette[pixels[y * getWidth() + x] & 0xFF];
+    }
+
+    public byte getPixel(int x, int y) {
+		if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) {
+            throw new IndexOutOfBoundsException();
+        }
+		return pixels[y * getWidth() + x];
+	}
+
+    public void setPixel(int x, int y, byte content) {
+		if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight() || (content & 0xFF) >= palette.length) {
+            throw new IndexOutOfBoundsException();
+        }
+		pixels[y * getWidth() + x] = content;
+	}
+
+	public int[] getPalette() {
+	    return palette;
+    }
+
 }

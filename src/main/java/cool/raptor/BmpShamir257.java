@@ -1,15 +1,19 @@
 package cool.raptor;
 
-import io.nayuki.bmpio.BmpImage;
-import io.nayuki.bmpio.BmpReader;
-import io.nayuki.bmpio.BmpWriter;
+import io.nayuki.bmpio.BMPReader;
+import io.nayuki.bmpio.BMPWriter;
+import io.nayuki.bmpio.BlackAndWhiteBMPImage;
+import io.nayuki.bmpio.PalletedBMPImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-public class BmpShamir257 implements Shamir<BmpImage> {
+public class BmpShamir257 implements Shamir<PalletedBMPImage> {
 
     private int n;
     private int k;
@@ -18,21 +22,19 @@ public class BmpShamir257 implements Shamir<BmpImage> {
         if (k > n)
             throw new IllegalArgumentException();
 
-        this.k=k;
-        this.n=n;
+        this.k = k;
+        this.n = n;
     }
 
     @Override
-    public Map<Integer, BmpImage> split(BmpImage secretImage) {
+    public Map<Integer, PalletedBMPImage> split(PalletedBMPImage secretImage) {
 
-        int width = secretImage.image.getWidth();
-        int height = secretImage.image.getHeight();
-        int[] palette = secretImage.getPalette();
+        int width = secretImage.getWidth();
+        int height = secretImage.getHeight();
 
-        //System.out.println("width: " + width + " height: " + height);
-        Map<Integer, BmpImage> shades = new HashMap<>();
+        Map<Integer, PalletedBMPImage> shades = new HashMap<>();
         for (int s = 1; s <= n; s++) {
-            shades.put(s, new BmpImage(width, height, palette));
+            shades.put(s, new BlackAndWhiteBMPImage(width, height));
         }
 
         Random rand = new Random();
@@ -60,13 +62,14 @@ public class BmpShamir257 implements Shamir<BmpImage> {
                             break;
                         }
                         //System.out.println(shadeByte);
-                        shades.get(x).image.setRgb888Pixel(i, j, shadeByte);
+                        shades.get(x).setPixel(i, j, (byte)shadeByte);
                         if(i==1&& j==1) {
                             System.out.println("X: " + x + " shadeByte: " + shadeByte);
                         }
                     }
-                }while (overflow);
-                if(i==1&& j==1) {
+                } while (overflow);
+
+                if(i==1 && j==1) {
                     System.out.println("secreto: " + secretByte);
                 }
             }
@@ -75,11 +78,10 @@ public class BmpShamir257 implements Shamir<BmpImage> {
     }
 
     @Override
-    public BmpImage join(Map<Integer, BmpImage> shades) {
-        int width = shades.get(1).image.getWidth();
-        int height = shades.get(1).image.getHeight();
-        int[] palette = shades.get(1).getPalette();
-        BmpImage secret = new BmpImage(width, height, palette);
+    public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades) {
+        int width = shades.entrySet().iterator().next().getValue().getWidth();
+        int height = shades.entrySet().iterator().next().getValue().getHeight();
+        PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
 
         System.out.println("width: " + width + " height: " + height);
         List<Integer> xValues = shades.keySet().stream().collect(Collectors.toList());
@@ -89,18 +91,17 @@ public class BmpShamir257 implements Shamir<BmpImage> {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 for (int s: shades.keySet()) {
-                    points.put(s,shades.get(s).getPixel(i,j));
+                    points.put(s, (int) shades.get(s).getPixel(i,j));
                 }
-                if(i==1&& j==1) {
+                if(i==1 && j==1) {
                     points.entrySet()
                         .forEach(entry -> System.out.println("X: " + entry.getKey() + " shadeByte: " + entry.getValue()));
                 }
                 secretByte = getSecret(points);
-                if(i==1&& j==1) {
+                if(i==1 && j==1) {
                     System.out.println("secreto: " + secretByte);
                 }
-                //System.out.println(secretByte);
-                secret.image.setRgb888Pixel(i,j,secretByte);
+                secret.setPixel(i, j, (byte)secretByte);
             }
         }
         return secret;
@@ -121,11 +122,11 @@ public class BmpShamir257 implements Shamir<BmpImage> {
                     div *= (x - p);
                 }
             }
-            accum = Math.floorMod(accum,257);
-            div = Math.floorMod(div,257);
-            res += Math.floorMod(accum * getInv(div),257);
+            accum = Math.floorMod(accum, 257);
+            div = Math.floorMod(div, 257);
+            res += Math.floorMod(accum * getInv(div), 257);
         }
-        return Math.floorMod(res,257);
+        return Math.floorMod(res, 257);
     }
 
     private static int getInv(int a) {
@@ -133,46 +134,53 @@ public class BmpShamir257 implements Shamir<BmpImage> {
         int m0 = m, t, q;
         int x0 = 0, x1 = 1;
 
-        if (m == 1)
+        if (m == 1) {
             return 0;
+        }
 
-        while (a > 1)
-        {
+        while (a > 1) {
             // q is quotient
             q = a / m;
-
             t = m;
 
             // m is remainder now, process same as
             // Euclid's algo
             m = a % m;
             a = t;
-
             t = x0;
-
             x0 = x1 - q * x0;
-
             x1 = t;
         }
 
         // Make x1 positive
-        if (x1 < 0)
+        if (x1 < 0) {
             x1 += m0;
+        }
 
         return x1;
     }
 
     public static void main(String[] args) throws IOException{
-        BmpImage secret = BmpReader.read(new File("./images/Alfred.bmp"));
+        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Alfred.bmp"));
         BmpShamir257 shamir = new BmpShamir257(2,4);
-        Map<Integer, BmpImage> shadows = shamir.split(secret);
-        System.out.println(shadows);
+        Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
+        System.out.println(shadows.keySet());
         File f = new File("./images/Alfred2.bmp");
-        BmpImage secret2 = shamir.join(shadows);
+        System.out.println(shadows);
+        PalletedBMPImage secret2 = shamir.join(shadows);
         if(!f.exists() && !f.isDirectory())
         {
             f.createNewFile();
         }
-        BmpWriter.write(f, secret2);
+        BMPWriter.write(f, secret2);
+
+        /*PalletedBMPImage secret3 = new BlackAndWhiteBMPImage(secret.getWidth(), secret.getHeight());
+        for (int i = 0; i < secret.getWidth(); i++) {
+            for (int j = 0; j < secret.getHeight(); j++) {
+                secret3.setPixel(i, j, secret.getPixel(i, j));
+            }
+        }
+        File f = new File("./images/Alfred3.bmp");
+        BMPWriter.write(f, secret3);*/
     }
 }

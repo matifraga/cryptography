@@ -24,39 +24,23 @@
 
 package io.nayuki.bmpio;
 
-
 public abstract class BMPImage {
 
-	protected int width;
-    protected int height;
+	private int width;
+    private int height;
 
-    protected int horizontalResolution = 3780;
-    protected int verticalResolution = 3780;
+    private int horizontalResolution = 3780;
+    private int verticalResolution = 3780;
 
-    protected int bitsPerPixel;
-    protected int colorsUsed;
-
-    protected int[] pixels;
+    private int bitsPerPixel;
+    private int colorsUsed;
 
     public BMPImage(int width, int height) {
 	    this.width = width;
 	    this.height = height;
-        if (width > Integer.MAX_VALUE / height)
-            throw new IllegalArgumentException("Image dimensions too large");
-        pixels = new int[width * height];
     }
 
-    public int getPixel(int x, int y) {
-        if (x < 0 || x >= getWidth() || y < 0 || y >= getHeigth())
-            throw new IndexOutOfBoundsException();
-        return pixels[y * getWidth() + x];
-    }
-
-    public void setPixel(int x, int y, int content) {
-        if (x < 0 || x >= getWidth() || y < 0 || y >= getHeigth())
-            throw new IndexOutOfBoundsException();
-        pixels[y * getWidth() + x] = content;
-    }
+    public abstract int getColor(int x, int y);
 
     public int getBitsPerPixel() {
         return bitsPerPixel;
@@ -94,7 +78,7 @@ public abstract class BMPImage {
 	    return width;
     }
 
-    public int getHeigth() {
+    public int getHeight() {
 	    return height;
     }
 }

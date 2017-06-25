@@ -41,6 +41,10 @@ final class LittleEndianDataOutput {
 		out.write(b);
 	}
 
+	public void writeByte(byte b) throws IOException {
+        out.writeByte(b);
+    }
+
 	public void writeInt16(int x) throws IOException {
 		out.writeShort((x & 0xFF) << 8 | (x & 0xFF00) >>> 8);
 	}

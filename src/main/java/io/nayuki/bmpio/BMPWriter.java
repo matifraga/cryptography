@@ -29,60 +29,62 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+public final class BMPWriter {
 
-public final class BmpWriter {
-
-    public static void write(File file, BmpImage bmp) throws IOException {
+    public static void write(File file, PalletedBMPImage image) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(file);
-        write(outputStream, bmp);
+        writePalletedImage(outputStream, image);
         outputStream.close();
     }
 
-	public static void write(OutputStream out, BmpImage bmp) throws IOException {
-		LittleEndianDataOutput out1 = new LittleEndianDataOutput(out);
+    private static void writePalletedImage(OutputStream out, PalletedBMPImage image) throws IOException {
+        LittleEndianDataOutput out1 = new LittleEndianDataOutput(out);
 
-		Rgb888Image image = bmp.image;
-		int width = image.getWidth();
-		int height = image.getHeight();
-		int rowSize = (width * 3 + 3) / 4 * 4;  // 3 bytes per pixel in RGB888, round up to multiple of 4
-		int imageSize = rowSize * height;
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int rowSize = (width * (image.getBitsPerPixel() / 8) + 3) / 4 * 4;  // 3 bytes per pixel in RGB888, round up to multiple of 4
+        int imageSize = rowSize * height;
 
-		// BITMAPFILEHEADER
-		out1.writeBytes(new byte[]{'B', 'M'});  // FileType
-		out1.writeInt32(14 + 40 + imageSize);   // FileSize
-		out1.writeInt16(0);                     // Reserved1
-		out1.writeInt16(0);                     // Reserved2
-		out1.writeInt32(14 + 40);               // BitmapOffset
+        // BITMAPFILEHEADER
+        out1.writeBytes(new byte[]{'B', 'M'});  // FileType
+        out1.writeInt32(14 + 40 + imageSize);   // FileSize
+        out1.writeInt16(0);                     // Reserved1
+        out1.writeInt16(0);                     // Reserved2
+        out1.writeInt32((int) (14 + 40 + Math.pow(2, image.getBitsPerPixel()) * 4));               // BitmapOffset
 
-		// BITMAPINFOHEADER
-		out1.writeInt32(40);                        // Size
-		out1.writeInt32(width);                     // Width
-		out1.writeInt32(height);                    // Height
-		out1.writeInt16(1);                         // Planes
-		out1.writeInt16(24);                        // BitsPerPixel
-		out1.writeInt32(0);                         // Compression
-		out1.writeInt32(imageSize);                 // SizeOfBitmap
-		out1.writeInt32(bmp.horizontalResolution);  // HorzResolution
-		out1.writeInt32(bmp.verticalResolution);    // VertResolution
-		out1.writeInt32(0);                         // ColorsUsed
-		out1.writeInt32(0);                         // ColorsImportant
+        // BITMAPINFOHEADER
+        out1.writeInt32(40);                        // Size
+        out1.writeInt32(image.getWidth());                     // Width
+        out1.writeInt32(image.getHeight());                    // Height
+        out1.writeInt16(1);                         // Planes
+        out1.writeInt16(image.getBitsPerPixel());                        // BitsPerPixel
+        out1.writeInt32(0);                         // Compression
+        out1.writeInt32(imageSize);                 // SizeOfBitmap
+        out1.writeInt32(image.getHorizontalResolution());  // HorzResolution
+        out1.writeInt32(image.getVerticalResolution());    // VertResolution
+        out1.writeInt32(image.getColorsUsed());                         // ColorsUsed
+        out1.writeInt32(0);                         // ColorsImportant
 
-		// Image data
-		byte[] row = new byte[rowSize];
-		for (int y = height - 1; y >= 0; y--) {
-			for (int x = 0; x < width; x++) {
-				int color = image.getRgb888Pixel(x, y);
-				row[x * 3 + 0] = (byte)(color >>>  0);  // Blue
-				row[x * 3 + 1] = (byte)(color >>>  8);  // Green
-				row[x * 3 + 2] = (byte)(color >>> 16);  // Red
-			}
-			out1.writeBytes(row);
-		}
+        int[] pallete = image.getPalette();
 
-		out1.flush();
-	}
+        for (int i = 0; i < pallete.length; i++) {
+            out1.writeInt32(pallete[i]);
+        }
 
-	// Not instantiable
-	private BmpWriter() {}
+        // Image data
+        byte[] row = new byte[rowSize];
+        for (int y = height - 1; y >= 0; y--) {
+            for (int x = 0; x < height; x++) {
+                byte index = image.getPixel(x, y);
+                out1.writeByte(index);
+            }
+        }
+
+        out1.flush();
+    }
+
+    // Not instantiable
+    private BMPWriter() {
+    }
 
 }
