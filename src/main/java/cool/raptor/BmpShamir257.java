@@ -91,7 +91,7 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 for (int s: shades.keySet()) {
-                    points.put(s, (int) shades.get(s).getPixel(i,j));
+                    points.put(s,  Byte.toUnsignedInt(shades.get(s).getPixel(i,j)));
                 }
                 if(i==1 && j==1) {
                     points.entrySet()
