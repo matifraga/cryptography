@@ -44,7 +44,7 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 //System.out.println("x: " + i + "y: " + j);
-                int secretByte = secretImage.getPixel(i, j);
+                int secretByte = Byte.toUnsignedInt(secretImage.getPixel(i, j));
                 //secretByte >>= 8;
                 coefs[0] = secretByte;
                 boolean overflow;
@@ -161,11 +161,11 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
     }
 
     public static void main(String[] args) throws IOException{
-        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Alfred.bmp"));
+        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Facundo.bmp"));
         BmpShamir257 shamir = new BmpShamir257(2,4);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         System.out.println(shadows.keySet());
-        File f = new File("./images/Alfred2.bmp");
+        File f = new File("./images/Facundo2.bmp");
         System.out.println(shadows);
         PalletedBMPImage secret2 = shamir.join(shadows);
         if(!f.exists() && !f.isDirectory())
