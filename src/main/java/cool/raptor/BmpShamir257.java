@@ -161,11 +161,11 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
     }
 
     public static void main(String[] args) throws IOException{
-        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Facundo.bmp"));
+        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/AlfredSmall.bmp"));
         BmpShamir257 shamir = new BmpShamir257(2,4);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         System.out.println(shadows.keySet());
-        File f = new File("./images/Facundo2.bmp");
+        File f = new File("./images/AlfredSmall2.bmp");
         System.out.println(shadows);
         PalletedBMPImage secret2 = shamir.join(shadows);
         if(!f.exists() && !f.isDirectory())
