@@ -25,29 +25,42 @@
 package io.nayuki.bmpio;
 
 
-public final class BmpImage {
+public final class BufferedPalettedRgb888Image extends BmpImage {
 
-	public Rgb888Image image;
-	public int horizontalResolution;
-	public int verticalResolution;
-    public int bitsPerPixel;
+	private int[] palette;
+	private byte[] pixels;
 
-	public BmpImage() {
-		horizontalResolution = 3780;  // 96 DPI
-		verticalResolution = 3780;  // 96 DPI
+	public BufferedPalettedRgb888Image(int width, int height, int[] palette) {
+		super(width, height);
+		if (width > Integer.MAX_VALUE / height)
+			throw new IllegalArgumentException("Image dimensions too large");
+		this.palette = palette.clone();
+		pixels = new byte[width * height];
 	}
-	public BmpImage(int width, int height, int[] palette) {
-        horizontalResolution = 3780;  // 96 DPI
-        verticalResolution = 3780;  // 96 DPI
-        image = new BufferedPalettedRgb888Image(width,height, palette);
+
+	public int getPixel(int x, int y) {
+		if (x < 0 || x >= width || y < 0 || y >= height)
+			throw new IndexOutOfBoundsException();
+		return palette[pixels[y * width + x] & 0xFF];
+	}
+
+    public void setPixel(int x, int y, int content) {
+        setRgb888Pixel(x, y, (byte) content);
     }
+
+    private void setRgb888Pixel(int x, int y, byte colorIndex) {
+		if (x < 0 || x >= width || y < 0 || y >= height || (colorIndex & 0xFF) >= palette.length)
+			throw new IndexOutOfBoundsException();
+		pixels[y * width + x] = colorIndex;
+	}
 
     public int[] getPalette() {
-	    return ((BufferedPalettedRgb888Image)image).getPalette();
+        return palette;
     }
 
-    public int getPixel(int x, int y) {
-	    return ((BufferedPalettedRgb888Image)image).getPixel(x,y);
-    }
-
+    /*public int getPixel(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height)
+            throw new IndexOutOfBoundsException();
+        return pixels[y * width + x] & 0xFF;
+    }*/
 }
