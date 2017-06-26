@@ -25,7 +25,7 @@ public class Recovery implements Algorithm {
         this.k = k;
         this.secretPath = secret;
         try {
-            for(File file : images) {
+            for (File file : images) {
                 this.images.add(BMPReader.readPalletedBMP(file));
             }
         } catch (IOException e) {

@@ -1,6 +1,5 @@
 package cool.raptor;
 
-import io.nayuki.bmpio.BMPImage;
 import io.nayuki.bmpio.BMPReader;
 import io.nayuki.bmpio.BMPWriter;
 import io.nayuki.bmpio.PalletedBMPImage;
@@ -18,10 +17,10 @@ public class Distribution implements Algorithm {
     private PalletedBMPImage secret;
     private List<PalletedBMPImage> images = new ArrayList<>();
 
-	public Distribution(final File secret, final Integer n, final Integer k, final List<File> images) {
+    public Distribution(final File secret, final Integer n, final Integer k, final List<File> images) {
         try {
             this.secret = BMPReader.readPalletedBMP(secret);
-            for(File file : images) {
+            for (File file : images) {
                 this.images.add(BMPReader.readPalletedBMP(file));
             }
         } catch (IOException e) {
@@ -31,17 +30,17 @@ public class Distribution implements Algorithm {
         this.k = k;
     }
 
-	@Override
-	public Boolean validate() {
-		if (images.size() < n) {
-		    return Boolean.FALSE;
+    @Override
+    public Boolean validate() {
+        if (images.size() < n) {
+            return Boolean.FALSE;
         }
         return Boolean.TRUE;
-	}
+    }
 
-	@Override
-	public Boolean execute() {
-	    Integer randomSeed = 2;
+    @Override
+    public Boolean execute() {
+        Integer randomSeed = 2;
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(randomSeed, k, n, M);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
@@ -63,5 +62,5 @@ public class Distribution implements Algorithm {
             }
         }
         return Boolean.TRUE;
-	}
+    }
 }

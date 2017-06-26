@@ -2,18 +2,16 @@ package cool.raptor;
 
 import io.nayuki.bmpio.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
+public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
     private int randomSeed;
     private int k;
     private int n;
-    private int m=257;
+    private int m = 257;
 
     public EfficientSecretSharing(int randomSeed, int k, int n, int m) {
         this.randomSeed = randomSeed;
@@ -24,15 +22,19 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
     @Override
     public Map<Integer, PalletedBMPImage> split(PalletedBMPImage secret) {
-
+        System.out.println();
+        System.out.println("GENERANDO SOMBRAS");
         int width = secret.getWidth();
         int height = secret.getHeight();
+        System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
         if (height % k != 0) {
+            System.out.println("Número de sombras k: " + k + " inválido");
             throw new IllegalArgumentException();
         }
-        int shadeHeight = height/k;
+        int shadeHeight = height / k;
         int shadeWidth = width;
-        int[] permutationTable = new int[width*height];
+        System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
+        int[] permutationTable = new int[width * height];
         Random random = new Random();
         random.setSeed(randomSeed);
         for (int r = 0; r < width * height; r++) {
@@ -69,41 +71,46 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
                 if (points[i - 1] == 256) {
                     coefs[0] = coefs[0] - 1;
                     i = 1;
-                }
-                else {
+                } else {
                     i++;
                 }
             } while (i <= n);
 
-            for (Integer key: shades.keySet()) {
-                shades.get(key).setPixel(shadeX, shadeY, (byte) points[key - 1] );
+            for (Integer key : shades.keySet()) {
+                shades.get(key).setPixel(shadeX, shadeY, (byte) points[key - 1]);
             }
             shadeY++;
             if (shadeY == shadeHeight) {
                 shadeY = 0;
                 shadeX++;
             }
-        }while(x < width && shadeX < shadeWidth);
+        } while (x < width && shadeX < shadeWidth);
 
         return shades;
     }
 
     @Override
     public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades) {
+        System.out.println();
+        System.out.println("RECUPERANDO EL SECRETO");
         int shadeHeight = 0;
         int shadeWidth = 0;
 
-        for (Integer key: shades.keySet()) {
+        for (Integer key : shades.keySet()) {
             shadeHeight = shades.get(key).getHeight();
             shadeWidth = shades.get(key).getWidth();
         }
 
+        System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
+
         int height = (k == 8) ? shadeHeight : shadeHeight * k;
         int width = shadeWidth;
 
+        System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
+
         PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
 
-        int[] permutationTable = new int[width*height];
+        int[] permutationTable = new int[width * height];
         Random random = new Random();
         random.setSeed(randomSeed);
 
@@ -114,17 +121,17 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
         int secretX = 0;
         int secretY = 0;
-        int[] secretBytes = new int[k];
+        int[] secretBytes;
 
         for (int i = 0; i < shadeWidth; i++) {
             for (int j = 0; j < shadeHeight; j++) {
-                for (Map.Entry<Integer, PalletedBMPImage> entry: shades.entrySet()) {
-                    points.put(entry.getKey(), Byte.toUnsignedInt(entry.getValue().getPixel(i,j)));
+                for (Map.Entry<Integer, PalletedBMPImage> entry : shades.entrySet()) {
+                    points.put(entry.getKey(), Byte.toUnsignedInt(entry.getValue().getPixel(i, j)));
                 }
 
                 secretBytes = getSecret(points);
                 for (int l = 0; l < k; l++) {
-                    secret.setPixel(secretX, secretY, (byte)(secretBytes[l] ^ permutationTable[secretX * height + secretY]));
+                    secret.setPixel(secretX, secretY, (byte) (secretBytes[l] ^ permutationTable[secretX * height + secretY]));
                     secretY++;
                     if (secretY >= height) {
                         secretY = 0;
@@ -141,79 +148,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
     }
 
     private int[] getSecret(Map<Integer, Integer> points) {
-        return Polynomial.solve(points,m).getCoefs();
-    }
-
-    private static int getInv(int a) {
-        int m = 257;
-        int m0 = m, t, q;
-        int x0 = 0, x1 = 1;
-
-        if (m == 1) {
-            return 0;
-        }
-
-        while (a > 1) {
-            // q is quotient
-            q = a / m;
-            t = m;
-
-            // m is remainder now, process same as
-            // Euclid's algo
-            m = a % m;
-            a = t;
-            t = x0;
-            x0 = x1 - q * x0;
-            x1 = t;
-        }
-
-        // Make x1 positive
-        if (x1 < 0) {
-            x1 += m0;
-        }
-
-        return x1;
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/mac.bmp"));
-        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,8,8,257);
-        Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
-        File f = new File("./images/Alfred5.bmp");
-        int i=0;
-        for (PalletedBMPImage shadow: shadows.values()) {
-            i++;
-            File f2 = new File("./images/shadow" + i + ".bmp");
-            if(!f2.exists() && !f2.isDirectory())
-            {
-                f2.createNewFile();
-            }
-            BMPWriter.write(f2, shadow);
-        }
-        Steganography<PalletedBMPImage> steganography = new BmpSteganography();
-        Map<Integer,PalletedBMPImage> carriers = new HashMap<>();
-        for (Map.Entry<Integer,PalletedBMPImage> shade: shadows.entrySet()) {
-            PalletedBMPImage carrier = BMPReader.readPalletedBMP(new File("./images/Lena512.bmp"));
-            File f3 = new File("./images/hiddenAlfred" + shade.getKey() + ".bmp");
-            carriers.put(shade.getKey(),steganography.hide(shade.getValue(),carrier));
-            if(!f3.exists() && !f3.isDirectory())
-            {
-                f3.createNewFile();
-            }
-            BMPWriter.write(f3, carriers.get(shade.getKey()));
-        }
-
-        for (Map.Entry<Integer,PalletedBMPImage> carry : carriers.entrySet()) {
-            shadows.put(carry.getKey(),steganography.recover(carry.getValue(),secret.getWidth(),secret.getHeight()/4));
-        }
-
-        PalletedBMPImage secret2 = shamir.join(shadows);
-        if(!f.exists() && !f.isDirectory())
-        {
-            f.createNewFile();
-        }
-        BMPWriter.write(f, secret2);
+        return Polynomial.solve(points, m).getCoefs();
     }
 }
 

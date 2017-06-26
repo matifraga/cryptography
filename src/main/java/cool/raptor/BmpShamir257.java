@@ -1,12 +1,8 @@
 package cool.raptor;
 
-import io.nayuki.bmpio.BMPReader;
-import io.nayuki.bmpio.BMPWriter;
 import io.nayuki.bmpio.BlackAndWhiteBMPImage;
 import io.nayuki.bmpio.PalletedBMPImage;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,10 +130,6 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
         int m0 = m, t, q;
         int x0 = 0, x1 = 1;
 
-        if (m == 1) {
-            return 0;
-        }
-
         while (a > 1) {
             // q is quotient
             q = a / m;
@@ -160,27 +152,4 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
         return x1;
     }
 
-    public static void main(String[] args) throws IOException{
-        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/AlfredSmall.bmp"));
-        BmpShamir257 shamir = new BmpShamir257(2,4);
-        Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
-        System.out.println(shadows.keySet());
-        File f = new File("./images/AlfredSmall2.bmp");
-        System.out.println(shadows);
-        PalletedBMPImage secret2 = shamir.join(shadows);
-        if(!f.exists() && !f.isDirectory())
-        {
-            f.createNewFile();
-        }
-        BMPWriter.write(f, secret2);
-
-        /*PalletedBMPImage secret3 = new BlackAndWhiteBMPImage(secret.getWidth(), secret.getHeight());
-        for (int i = 0; i < secret.getWidth(); i++) {
-            for (int j = 0; j < secret.getHeight(); j++) {
-                secret3.setPixel(i, j, secret.getPixel(i, j));
-            }
-        }
-        File f = new File("./images/Alfred3.bmp");
-        BMPWriter.write(f, secret3);*/
-    }
 }

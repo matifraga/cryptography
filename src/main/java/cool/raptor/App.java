@@ -28,8 +28,10 @@ public class App {
             }
         }
 
-        if (!arguments.containsKey("d") && !arguments.containsKey("r")) throw new IllegalArgumentException("Undefined Distribution/Reception");
-        if (arguments.containsKey("d") && arguments.containsKey("r")) throw new IllegalArgumentException("Undefined Distribution/Reception");
+        if (!arguments.containsKey("d") && !arguments.containsKey("r"))
+            throw new IllegalArgumentException("Undefined Distribution/Reception");
+        if (arguments.containsKey("d") && arguments.containsKey("r"))
+            throw new IllegalArgumentException("Undefined Distribution/Reception");
         if (!arguments.containsKey("secret")) throw new IllegalArgumentException("Undefined secret file name");
         if (!arguments.containsKey("k")) throw new IllegalArgumentException("Undefined number of shadows");
 
