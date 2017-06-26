@@ -191,22 +191,22 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
     }
 
     public static void main(String[] args) throws IOException {
-        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/AlfredSmall.bmp"));
-        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,2,4,257);
+        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Lena512.bmp"));
+        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,2,5,257);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         System.out.println(shadows.keySet());
-        File f = new File("./images/AlfredSmall3.bmp");
+        File f = new File("./images/Lena3.bmp");
         System.out.println(shadows);
         int i=0;
-        for (PalletedBMPImage shadow: shadows.values()) {
-            i++;
-            File f2 = new File("./images/shadow" + i);
-            if(!f2.exists() && !f2.isDirectory())
-            {
-                f2.createNewFile();
-            }
-            BMPWriter.write(f2, shadow);
-        }
+//        for (PalletedBMPImage shadow: shadows.values()) {
+//            i++;
+//            File f2 = new File("./images/shadow" + i + ".bmp");
+//            if(!f2.exists() && !f2.isDirectory())
+//            {
+//                f2.createNewFile();
+//            }
+//            BMPWriter.write(f2, shadow);
+//        }
         PalletedBMPImage secret2 = shamir.join(shadows);
         if(!f.exists() && !f.isDirectory())
         {
