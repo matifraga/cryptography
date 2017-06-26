@@ -1,17 +1,63 @@
 package cool.raptor;
 
+import io.nayuki.bmpio.BMPReader;
+import io.nayuki.bmpio.BMPWriter;
+import io.nayuki.bmpio.PalletedBMPImage;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Recovery implements Algorithm {
 
-    public Recovery() {
+    private final Integer M = 257;
+
+    private Integer n;
+    private Integer k;
+    private File secretPath;
+    private List<PalletedBMPImage> images = new ArrayList<>();
+
+    public Recovery(final File secret, final Integer n, final Integer k, final List<File> images) {
+        this.n = n;
+        this.k = k;
+        this.secretPath = secret;
+        try {
+            for(File file : images) {
+                this.images.add(BMPReader.readPalletedBMP(file));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public Boolean validate() {
-        return null;
+        if (images.size() < k) {
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
     }
 
     @Override
     public Boolean execute() {
-        return null;
+        Steganography<PalletedBMPImage> steganography = new BmpSteganography();
+        Map<Integer, PalletedBMPImage> shadows = new HashMap<>();
+        for (PalletedBMPImage image : images) {
+            Integer height = (k == 8) ? image.getHeight() : image.getSecretHeight();
+            Integer width = (k == 8) ? image.getWidth() : image.getSecretWidth();
+            shadows.put(image.getOrder(), steganography.recover(image, width, height));
+        }
+        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(images.get(0).getSeed(), k, n, M);
+        PalletedBMPImage secret = shamir.join(shadows);
+        try {
+            BMPWriter.write(secretPath, secret);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
     }
 }

@@ -27,7 +27,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
         int width = secret.getWidth();
         int height = secret.getHeight();
-        if(height%k != 0) {
+        if (height % k != 0) {
             throw new IllegalArgumentException();
         }
         int shadeHeight = height/k;
@@ -41,12 +41,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
         Map<Integer, PalletedBMPImage> shades = new HashMap<>();
         for (int s = 1; s <= n; s++) {
-            PalletedBMPImage shade = new BlackAndWhiteBMPImage(shadeWidth, shadeHeight);
-            shade.setSeed(randomSeed);
-            shade.setOrder(s);
-            shade.setSecretHeight(height);
-            shade.setSecretWidth(width);
-            shades.put(s, shade);
+            shades.put(s, new BlackAndWhiteBMPImage(shadeWidth, shadeHeight));
         }
 
         int x = 0;
@@ -102,11 +97,11 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
             shadeHeight = shades.get(key).getHeight();
             shadeWidth = shades.get(key).getWidth();
         }
-        
-        int height = shadeHeight * k;
+
+        int height = (k == 8) ? shadeHeight : shadeHeight * k;
         int width = shadeWidth;
 
-        PalletedBMPImage secret = new BlackAndWhiteBMPImage(width,height);
+        PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
 
         int[] permutationTable = new int[width*height];
         Random random = new Random();
@@ -182,8 +177,8 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
     public static void main(String[] args) throws IOException {
 
-        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Alfred.bmp"));
-        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,4,5,257);
+        PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/mac.bmp"));
+        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,8,8,257);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         File f = new File("./images/Alfred5.bmp");
         int i=0;

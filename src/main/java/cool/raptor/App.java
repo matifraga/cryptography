@@ -47,11 +47,15 @@ public class App {
         Algorithm algorithm;
 
         if (mode.equals("r")) {
-            algorithm = new Recovery();
+            algorithm = new Recovery(new File(secret), n, k, files);
         } else {
-            algorithm = new Distribution(new File(secret), k, n, files);
+            algorithm = new Distribution(new File(secret), n, k, files);
         }
 
-        algorithm.execute();
+        if (algorithm.validate()) {
+            algorithm.execute();
+        } else {
+            throw new IllegalArgumentException("Invalid image arrangement");
+        }
     }
 }

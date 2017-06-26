@@ -32,6 +32,11 @@ import java.io.OutputStream;
 public final class BMPWriter {
 
     public static void write(File file, PalletedBMPImage image) throws IOException {
+        if (file.getParentFile() != null && !file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        } else if (!file.exists()){
+            file.createNewFile();
+        }
         FileOutputStream outputStream = new FileOutputStream(file);
         writePalletedImage(outputStream, image);
         outputStream.close();

@@ -18,7 +18,7 @@ public class BmpSteganography implements Steganography<PalletedBMPImage>{
         int shadeHeight = shade.getHeight();
 
         if(shadeHeight * shadeWidth < height * width * 8) {
-            System.out.println("La imagen portadora es muy chica");
+            System.out.println("The host image is too small");
         }
 
         int bitGetter;
@@ -30,9 +30,9 @@ public class BmpSteganography implements Steganography<PalletedBMPImage>{
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 byteToHide = Byte.toUnsignedInt(secret.getPixel(i,j));
-                if(i==25 && j ==35) {
+                /*if(i==25 && j ==35) {
                     System.out.println("Byte to hide: " + byteToHide);
-                }
+                }*/
                 bitGetter = 0x1;
                 for (int k = 0; k < 8 ; k++) {
                     bitToHide = byteToHide & bitGetter;
@@ -47,7 +47,7 @@ public class BmpSteganography implements Steganography<PalletedBMPImage>{
         for (int i = 0; i < shadeWidth; i++) {
             for (int j = 0; j < shadeHeight; j++) {
                 if (i*shadeWidth + j >= bitsToHide.length) {
-                    System.out.println("DONE");
+                    //System.out.println("DONE");
                     return shade;
                 }
                 shadeByte = Byte.toUnsignedInt(shade.getPixel(i,j));
@@ -75,34 +75,32 @@ public class BmpSteganography implements Steganography<PalletedBMPImage>{
 
         // shadeWidth = width * 8
         int bitGetter = 0x1;
-        int[] hiddenBits = new int[width*height*8];
+        int[] hiddenBits = new int[width * height * 8];
         int hiddenPixel;
         int shadePixel;
         int hiddenBit;
         boolean stop = false;
 
         for (int i = 0; i < shadeWidth && !stop; i++) {
-            for (int j = 0; j < shadeWidth && !stop; j++) {
-                if(i*shadeHeight + j >= hiddenBits.length) {
-                    System.out.println("DONE");
+            for (int j = 0; j < shadeHeight && !stop; j++) {
+                if ((i * shadeHeight + j) >= hiddenBits.length) {
+                    //System.out.println("DONE");
                     stop = true;
                     break;
                 }
-                hiddenBits[i*shadeHeight + j] = Byte.toUnsignedInt(shade.getPixel(i,j)) & bitGetter;
+                hiddenBits[i*shadeHeight + j] = Byte.toUnsignedInt(shade.getPixel(i, j)) & bitGetter;
             }
         }
-//        System.out.println(width*height*8);
-//        System.out.println(shadeWidth*shadeHeight);
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 hiddenPixel = 0;
                 for (int k = 7; k >= 0; k--) {
-                    hiddenPixel = (hiddenPixel<<1 | hiddenBits[i*height*8 + j*8 + k]);
+                    hiddenPixel = (hiddenPixel<<1 | hiddenBits[i * height * 8 + j * 8 + k]);
                 }
-                if (i==25 && j == 35) {
+                /*if (i == 25 && j == 35) {
                     System.out.println("Hidden byte: " + hiddenPixel);
-                }
+                }*/
                 secret.setPixel(i,j,(byte)(hiddenPixel & 0xFF));
             }
         }
