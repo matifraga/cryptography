@@ -27,10 +27,6 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
         int width = secret.getWidth();
         int height = secret.getHeight();
         System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
-        if (height % k != 0) {
-            System.out.println("Número de sombras k: " + k + " inválido");
-            throw new IllegalArgumentException();
-        }
         int shadeHeight = height / k;
         int shadeWidth = width;
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);

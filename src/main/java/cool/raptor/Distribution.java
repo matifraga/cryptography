@@ -42,6 +42,11 @@ public class Distribution implements Algorithm {
     public Boolean execute() {
         Integer randomSeed = 2;
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(randomSeed, k, n, M);
+        if (secret.getHeight() % k != 0) {
+            System.out.println();
+            System.out.println("Número de sombras k: " + k + " inválido");
+            return Boolean.FALSE;
+        }
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
         List<Map.Entry<Integer, PalletedBMPImage>> shades = new ArrayList<>(shadows.entrySet());
