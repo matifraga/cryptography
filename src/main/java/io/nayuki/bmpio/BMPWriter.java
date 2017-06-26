@@ -74,7 +74,7 @@ public final class BMPWriter {
         // Image data
         byte[] row = new byte[rowSize];
         for (int y = height - 1; y >= 0; y--) {
-            for (int x = 0; x < height; x++) {
+            for (int x = 0; x < width; x++) {
                 byte index = image.getPixel(x, y);
                 out1.writeByte(index);
             }
