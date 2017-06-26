@@ -135,7 +135,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
                 }
 
                 for (int l = 0; l < k; l++) {
-                    secretBytes[l] = getSecret(points,l);
+                    secretBytes[l] = getSecret(points/*,l*/);
                     secret.setPixel(secretX, secretY, (byte)(secretBytes[l] ^ permutationTable[secretX * height + secretY]));
                     if(secretX == 10 && secretY == 25) {
                         System.out.println(secret.getPixel(secretX,secretY));
