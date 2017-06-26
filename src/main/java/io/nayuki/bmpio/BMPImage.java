@@ -32,6 +32,9 @@ public abstract class BMPImage {
     private int horizontalResolution = 3780;
     private int verticalResolution = 3780;
 
+    private int seed = 0;
+    private int order = 0;
+
     private int bitsPerPixel;
     private int colorsUsed;
 
@@ -80,5 +83,21 @@ public abstract class BMPImage {
 
     public int getHeight() {
 	    return height;
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

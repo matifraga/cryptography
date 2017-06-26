@@ -41,7 +41,10 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
         Map<Integer, PalletedBMPImage> shades = new HashMap<>();
         for (int s = 1; s <= n; s++) {
-            shades.put(s, new BlackAndWhiteBMPImage(shadeWidth, shadeHeight));
+            PalletedBMPImage shade = new BlackAndWhiteBMPImage(shadeWidth, shadeHeight);
+            shade.setSeed(randomSeed);
+            shade.setOrder(s);
+            shades.put(s, shade);
         }
 
         int x = 0;
@@ -192,21 +195,21 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
     public static void main(String[] args) throws IOException {
         PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Lena512.bmp"));
-        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,2,5,257);
+        Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,1,8,257);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         System.out.println(shadows.keySet());
         File f = new File("./images/Lena3.bmp");
         System.out.println(shadows);
         int i=0;
-//        for (PalletedBMPImage shadow: shadows.values()) {
-//            i++;
-//            File f2 = new File("./images/shadow" + i + ".bmp");
-//            if(!f2.exists() && !f2.isDirectory())
-//            {
-//                f2.createNewFile();
-//            }
-//            BMPWriter.write(f2, shadow);
-//        }
+        for (PalletedBMPImage shadow: shadows.values()) {
+            i++;
+            File f2 = new File("./images/shadow" + i + ".bmp");
+            if(!f2.exists() && !f2.isDirectory())
+            {
+                f2.createNewFile();
+            }
+            BMPWriter.write(f2, shadow);
+        }
         PalletedBMPImage secret2 = shamir.join(shadows);
         if(!f.exists() && !f.isDirectory())
         {
