@@ -102,8 +102,8 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
             shadeHeight = shades.get(key).getHeight();
             shadeWidth = shades.get(key).getWidth();
         }
-
-        int height = (int) Math.floor(1.0*shadeHeight * 1.0*k);
+        
+        int height = shadeHeight * k;
         int width = shadeWidth;
 
         PalletedBMPImage secret = new BlackAndWhiteBMPImage(width,height);
