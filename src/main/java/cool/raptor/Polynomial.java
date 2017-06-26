@@ -11,14 +11,6 @@ public class Polynomial {
         this.order=coefs.length-1;
     }
 
-    public int evaluate(int x) {
-        int result = 0;
-        for (int i = 0; i <= order; i++) {
-            result += Math.pow(x,i) * coefs[i];
-        }
-        return result;
-    }
-
     public static Polynomial add(Polynomial p1, Polynomial p2){
         int n = Math.max(p1.coefs.length, p2.coefs.length);
         int[] newCoefs = new int[n];
@@ -47,17 +39,6 @@ public class Polynomial {
             }
         }
         return new Polynomial(newCoefs);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("P(x)=");
-        sb.append("("+coefs[0]+")");
-        for(int i = 1; i < coefs.length; i++){
-            sb.append(i>0?"+(":"(").append(coefs[i]).append(i>0?"x":"").append(i>1?i:"").append(")");
-        }
-        return sb.toString();
     }
 
     public static Polynomial solve(Map<Integer, Integer> ints, int mod){
@@ -132,6 +113,29 @@ public class Polynomial {
             int key = i.getKey();
             System.out.println((ints.get(key)%mod == ints2.get(key)%mod)?"OK":"UPS");
         }
+    }
+
+    public int[] getCoefs() {
+        return coefs;
+    }
+
+    public int evaluate(int x) {
+        int result = 0;
+        for (int i = 0; i <= order; i++) {
+            result += Math.pow(x,i) * coefs[i];
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("P(x)=");
+        sb.append("("+coefs[0]+")");
+        for(int i = 1; i < coefs.length; i++){
+            sb.append(i>0?"+(":"(").append(coefs[i]).append(i>0?"x":"").append(i>1?i:"").append(")");
+        }
+        return sb.toString();
     }
 
 }
