@@ -63,7 +63,8 @@ public final class BMPWriter {
         out1.writeInt32(image.getHorizontalResolution());  // HorzResolution
         out1.writeInt32(image.getVerticalResolution());    // VertResolution
         out1.writeInt32(image.getColorsUsed());                         // ColorsUsed
-        out1.writeInt32(0);                         // ColorsImportant
+        out1.writeInt16(image.getSecretWidth());                         // ColorsImportant
+        out1.writeInt16(image.getSecretHeight());
 
         int[] pallete = image.getPalette();
 

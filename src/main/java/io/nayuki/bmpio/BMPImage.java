@@ -35,6 +35,9 @@ public abstract class BMPImage {
     private int seed = 0;
     private int order = 0;
 
+    private int secretWidth = 0;
+    private int secretHeight = 0;
+
     private int bitsPerPixel;
     private int colorsUsed;
 
@@ -99,5 +102,21 @@ public abstract class BMPImage {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public int getSecretWidth() {
+        return secretWidth;
+    }
+
+    public void setSecretWidth(int secretWidth) {
+        this.secretWidth = secretWidth;
+    }
+
+    public int getSecretHeight() {
+        return secretHeight;
+    }
+
+    public void setSecretHeight(int secretHeight) {
+        this.secretHeight = secretHeight;
     }
 }

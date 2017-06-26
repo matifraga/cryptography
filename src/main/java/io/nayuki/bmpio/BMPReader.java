@@ -74,10 +74,12 @@ public final class BMPReader {
 		int colorsUsed;
 		int horizontalResolution;
 		int verticalResolution;
+        int secretWidth;
+        int secretHeight;
 
 		if (headerSize == 40) {
 			int planes;
-			int colorsImportant;
+			int colorsImportant = 0;
 			width  = in1.readInt32();
 			height = in1.readInt32();
 			topToBottom = height < 0;
@@ -89,7 +91,8 @@ public final class BMPReader {
 			horizontalResolution = in1.readInt32();
 			verticalResolution = in1.readInt32();
 			colorsUsed = in1.readInt32();
-			colorsImportant = in1.readInt32();
+            secretWidth = in1.readInt16();
+            secretHeight = in1.readInt16();
 
 			if (width <= 0)
 				throw new RuntimeException("Invalid width: " + width);
@@ -165,6 +168,8 @@ public final class BMPReader {
 		image.setColorsUsed(colorsUsed);
 		image.setSeed(seed);
 		image.setOrder(order);
+        image.setSecretWidth(secretWidth);
+        image.setSecretHeight(secretHeight);
 
 		return image;
 	}
