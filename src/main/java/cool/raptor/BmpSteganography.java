@@ -18,7 +18,7 @@ public class BmpSteganography implements Steganography<PalletedBMPImage>{
         int shadeHeight = shade.getHeight();
 
         if(shadeHeight * shadeWidth < height * width * 8) {
-            System.out.println("La imagen ");
+            System.out.println("La imagen portadora es muy chica");
         }
 
         int bitGetter;
