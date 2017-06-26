@@ -48,8 +48,8 @@ public final class BMPWriter {
         // BITMAPFILEHEADER
         out1.writeBytes(new byte[]{'B', 'M'});  // FileType
         out1.writeInt32(14 + 40 + imageSize);   // FileSize
-        out1.writeInt16(0);                     // Reserved1
-        out1.writeInt16(0);                     // Reserved2
+        out1.writeInt16(image.getSeed());                     // Reserved1
+        out1.writeInt16(image.getOrder());                     // Reserved2
         out1.writeInt32((int) (14 + 40 + Math.pow(2, image.getBitsPerPixel()) * 4));               // BitmapOffset
 
         // BITMAPINFOHEADER

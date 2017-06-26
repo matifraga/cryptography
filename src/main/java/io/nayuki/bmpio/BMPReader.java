@@ -54,10 +54,13 @@ public final class BMPReader {
 		// BITMAPFILEHEADER (14 bytes)
 		int fileSize;
 		int imageDataOffset;
+		int seed;
+		int order;
 		if (in1.readInt16() != 0x4D42)  // "BM"
 			throw new RuntimeException("Invalid BMP signature");
 		fileSize = in1.readInt32();
-		in1.skipFully(4);  // Skip reserved
+		seed = in1.readInt16();
+		order = in1.readInt16();
 		imageDataOffset = in1.readInt32();
 
 		// BITMAPINFOHEADER
@@ -160,6 +163,8 @@ public final class BMPReader {
 		image.setHorizontalResolution(horizontalResolution);
 		image.setBitsPerPixel(bitsPerPixel);
 		image.setColorsUsed(colorsUsed);
+		image.setSeed(seed);
+		image.setOrder(order);
 
 		return image;
 	}

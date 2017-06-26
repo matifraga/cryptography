@@ -41,7 +41,10 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
 
         Map<Integer, PalletedBMPImage> shades = new HashMap<>();
         for (int s = 1; s <= n; s++) {
-            shades.put(s, new BlackAndWhiteBMPImage(shadeWidth, shadeHeight));
+            PalletedBMPImage shade = new BlackAndWhiteBMPImage(shadeWidth, shadeHeight);
+            shade.setSeed(randomSeed);
+            shade.setOrder(s);
+            shades.put(s, shade);
         }
 
         int x = 0;
@@ -176,6 +179,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
     }
 
     public static void main(String[] args) throws IOException {
+
         PalletedBMPImage secret = BMPReader.readPalletedBMP(new File("./images/Alfred.bmp"));
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(2,4,5,257);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
@@ -190,7 +194,6 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
             }
             BMPWriter.write(f2, shadow);
         }
-
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
         Map<Integer,PalletedBMPImage> carriers = new HashMap<>();
         for (Map.Entry<Integer,PalletedBMPImage> shade: shadows.entrySet()) {
@@ -207,7 +210,6 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage>{
         for (Map.Entry<Integer,PalletedBMPImage> carry : carriers.entrySet()) {
             shadows.put(carry.getKey(),steganography.recover(carry.getValue(),secret.getWidth(),secret.getHeight()/4));
         }
-
 
         PalletedBMPImage secret2 = shamir.join(shadows);
         if(!f.exists() && !f.isDirectory())
