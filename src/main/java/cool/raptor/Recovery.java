@@ -46,7 +46,7 @@ public class Recovery implements Algorithm {
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
         Map<Integer, PalletedBMPImage> shadows = new HashMap<>();
         for (PalletedBMPImage image : images) {
-            Integer height = (k == 8) ? image.getHeight() : image.getSecretHeight();
+            Integer height = (k == 8) ? image.getHeight()/8 : image.getSecretHeight();
             Integer width = (k == 8) ? image.getWidth() : image.getSecretWidth();
             shadows.put(image.getOrder(), steganography.recover(image, width, height));
         }
