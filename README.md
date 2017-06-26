@@ -41,6 +41,7 @@ Recovery:
 ``` bash
 java -jar uber-cryptography-1.0-SNAPSHOT.jar -r -secret secret.bmp -k 3 -n 5 -dir dist
 ```
+The dist directory must contain only the shades from the current run. If the directory contains shades from a previous run the secret won't be recovered.
 
 ## Credits
 
