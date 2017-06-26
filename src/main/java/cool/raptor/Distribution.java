@@ -3,6 +3,7 @@ package cool.raptor;
 import io.nayuki.bmpio.BMPReader;
 import io.nayuki.bmpio.BMPWriter;
 import io.nayuki.bmpio.PalletedBMPImage;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +51,14 @@ public class Distribution implements Algorithm {
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
         List<Map.Entry<Integer, PalletedBMPImage>> shades = new ArrayList<>(shadows.entrySet());
+        try {
+            File dir = new File("./dist/");
+            if(dir.exists() && dir.isDirectory()) {
+                FileUtils.cleanDirectory(dir);
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < shades.size(); i++) {
             Map.Entry<Integer, PalletedBMPImage> shade = shades.get(i);
             PalletedBMPImage host = images.get(i);
