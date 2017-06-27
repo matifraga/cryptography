@@ -57,7 +57,7 @@ public class App {
         if (algorithm.validate()) {
             algorithm.execute();
         } else {
-            throw new IllegalArgumentException("Invalid k:" + k);
+            throw new IllegalArgumentException("Invalid image amount");
         }
     }
 }
