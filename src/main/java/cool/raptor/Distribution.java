@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.*;
 
 public class Distribution implements Algorithm {
@@ -36,15 +37,16 @@ public class Distribution implements Algorithm {
         if (images.size() < n) {
             return Boolean.FALSE;
         }
-        if (secret.getHeight() % k != 0) {
-            return Boolean.FALSE;
-        }
+//        if (secret.getHeight() % k != 0) {
+//            return Boolean.FALSE;
+//        }
         return Boolean.TRUE;
     }
 
     @Override
     public Boolean execute() {
-        Integer randomSeed = 2;
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] randomSeed = secureRandom.generateSeed(2);
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(randomSeed, k, n, M);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
@@ -61,8 +63,8 @@ public class Distribution implements Algorithm {
             Map.Entry<Integer, PalletedBMPImage> shade = shades.get(i);
             PalletedBMPImage host = images.get(i);
             host = steganography.hide(shade.getValue(), host);
-            host.setSecretWidth(shade.getValue().getWidth());
-            host.setSecretHeight(shade.getValue().getHeight());
+            host.setSecretWidth(secret.getWidth());
+            host.setSecretHeight(secret.getHeight());
             host.setOrder(shade.getKey());
             host.setSeed(randomSeed);
             File f = new File("./dist/host" + shade.getKey() + ".bmp");

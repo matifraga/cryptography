@@ -45,13 +45,15 @@ public class Recovery implements Algorithm {
     public Boolean execute() {
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();
         Map<Integer, PalletedBMPImage> shadows = new HashMap<>();
+        Integer width = 0;
+        Integer height = 0;
         for (PalletedBMPImage image : images) {
-            Integer height = (k == 8) ? image.getHeight()/8 : image.getSecretHeight();
-            Integer width = (k == 8) ? image.getWidth() : image.getSecretWidth();
-            shadows.put(image.getOrder(), steganography.recover(image, width, height));
+            height = image.getSecretHeight();
+            width = image.getSecretWidth();
+            shadows.put(image.getOrder(), steganography.recover(image, (int) Math.ceil((1.0*width)/(1.0*k)), height));
         }
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(images.get(0).getSeed(), k, n, M);
-        PalletedBMPImage secret = shamir.join(shadows);
+        PalletedBMPImage secret = shamir.join(shadows, width, height);
         try {
             BMPWriter.write(secretPath, secret);
         } catch (IOException e) {

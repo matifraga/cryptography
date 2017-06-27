@@ -74,9 +74,9 @@ public class BmpShamir257 implements Shamir<PalletedBMPImage> {
     }
 
     @Override
-    public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades) {
-        int width = shades.entrySet().iterator().next().getValue().getWidth();
-        int height = shades.entrySet().iterator().next().getValue().getHeight();
+    public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades, int width, int height) {
+//        int width = shades.entrySet().iterator().next().getValue().getWidth();
+//        int height = shades.entrySet().iterator().next().getValue().getHeight();
         PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
 
         System.out.println("width: " + width + " height: " + height);

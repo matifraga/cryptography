@@ -1,19 +1,21 @@
 package cool.raptor;
 
-import io.nayuki.bmpio.*;
+import io.nayuki.bmpio.BlackAndWhiteBMPImage;
+import io.nayuki.bmpio.PalletedBMPImage;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
-    private int randomSeed;
+    private byte[] randomSeed;
     private int k;
     private int n;
     private int m = 257;
 
-    public EfficientSecretSharing(int randomSeed, int k, int n, int m) {
+    public EfficientSecretSharing(byte[] randomSeed, int k, int n, int m) {
         this.randomSeed = randomSeed;
         this.k = k;
         this.n = n;
@@ -27,11 +29,11 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
         int width = secret.getWidth();
         int height = secret.getHeight();
         System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
-        int shadeHeight = height / k;
-        int shadeWidth = width;
+        int shadeHeight = height;
+        int shadeWidth = (int) Math.ceil((1.0*width) / (1.0*k));
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
         int[] permutationTable = new int[width * height];
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         random.setSeed(randomSeed);
         for (int r = 0; r < width * height; r++) {
             permutationTable[r] = random.nextInt(256);
@@ -52,11 +54,16 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
         do {
             for (int r = 0; r < k; r++) {
-                coefs[r] = Byte.toUnsignedInt(secret.getPixel(x, y)) ^ permutationTable[x * height + y];
-                y++;
-                if (y >= height) {
-                    y = 0;
-                    x++;
+                if (x >= width) {
+                    coefs[r] = 0;
+                }
+                else {
+                    coefs[r] = Byte.toUnsignedInt(secret.getPixel(x, y)) ^ permutationTable[x * height + y];
+                    y++;
+                    if (y >= height) {
+                        y = 0;
+                        x++;
+                    }
                 }
             }
             Polynomial poly = new Polynomial(coefs);
@@ -80,13 +87,13 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
                 shadeY = 0;
                 shadeX++;
             }
-        } while (x < width && shadeX < shadeWidth);
+        } while (x * y < width * height && shadeX < shadeWidth);
 
         return shades;
     }
 
     @Override
-    public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades) {
+    public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades, int width, int height) {
         System.out.println();
         System.out.println("RECUPERANDO EL SECRETO");
         int shadeHeight = 0;
@@ -99,15 +106,15 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
 
-        int height = shadeHeight * k;
-        int width = shadeWidth;
+//        int height = shadeHeight;
+//        int width = shadeWidth * k;
 
         System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
 
         PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
 
         int[] permutationTable = new int[width * height];
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         random.setSeed(randomSeed);
 
         for (int r = 0; r < width * height; r++) {

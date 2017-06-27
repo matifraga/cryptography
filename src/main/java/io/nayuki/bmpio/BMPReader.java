@@ -54,12 +54,12 @@ public final class BMPReader {
 		// BITMAPFILEHEADER (14 bytes)
 		int fileSize;
 		int imageDataOffset;
-		int seed;
+		byte[] seed = new byte[2];
 		int order;
 		if (in1.readInt16() != 0x4D42)  // "BM"
 			throw new RuntimeException("Invalid BMP signature");
 		fileSize = in1.readInt32();
-		seed = in1.readInt16();
+		in1.readFully(seed);
 		order = in1.readInt16();
 		imageDataOffset = in1.readInt32();
 
