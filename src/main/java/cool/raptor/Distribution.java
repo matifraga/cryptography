@@ -46,7 +46,7 @@ public class Distribution implements Algorithm {
     @Override
     public Boolean execute() {
         SecureRandom secureRandom = new SecureRandom();
-        byte[] randomSeed = secureRandom.generateSeed(2);
+        int randomSeed = secureRandom.nextInt(128);
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(randomSeed, k, n, M);
         Map<Integer, PalletedBMPImage> shadows = shamir.split(secret);
         Steganography<PalletedBMPImage> steganography = new BmpSteganography();

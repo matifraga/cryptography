@@ -10,12 +10,12 @@ import java.util.Random;
 
 public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
-    private byte[] randomSeed;
+    private int randomSeed;
     private int k;
     private int n;
     private int m = 257;
 
-    public EfficientSecretSharing(byte[] randomSeed, int k, int n, int m) {
+    public EfficientSecretSharing(int randomSeed, int k, int n, int m) {
         this.randomSeed = randomSeed;
         this.k = k;
         this.n = n;
@@ -33,7 +33,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
         int shadeWidth = (int) Math.ceil((1.0*width) / (1.0*k));
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
         int[] permutationTable = new int[width * height];
-        SecureRandom random = new SecureRandom();
+        Random random = new Random();
         random.setSeed(randomSeed);
         for (int r = 0; r < width * height; r++) {
             permutationTable[r] = random.nextInt(256);
