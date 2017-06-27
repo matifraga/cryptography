@@ -6,7 +6,10 @@ import io.nayuki.bmpio.PalletedBMPImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Recovery implements Algorithm {
 
@@ -45,8 +48,8 @@ public class Recovery implements Algorithm {
         Integer width = 0;
         Integer height = 0;
         for (PalletedBMPImage image : images) {
-            height = (k==8)?image.getHeight():image.getSecretHeight();
-            width = (k==8)?image.getWidth():image.getSecretWidth();
+            height = image.getSecretHeight();
+            width = image.getSecretWidth();
             shadows.put(image.getOrder(), steganography.recover(image, (int) Math.ceil((1.0*width)/(1.0*k)), height));
         }
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(images.get(0).getSeed(), k, n, M);
