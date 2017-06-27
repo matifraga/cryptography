@@ -32,7 +32,7 @@ public abstract class BMPImage {
     private int horizontalResolution = 3780;
     private int verticalResolution = 3780;
 
-    private byte[] seed = {0,0};
+    private int seed = 0;
     private int order = 0;
 
     private int secretWidth = 0;
@@ -88,11 +88,11 @@ public abstract class BMPImage {
 	    return height;
     }
 
-    public byte[] getSeed() {
+    public int getSeed() {
         return seed;
     }
 
-    public void setSeed(byte[] seed) {
+    public void setSeed(int seed) {
         this.seed = seed;
     }
 
