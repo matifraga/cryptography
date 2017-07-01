@@ -26,9 +26,7 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
         byte[] bitsToHide = new byte[height * width * 8];
 
         for(int i = 0; i < width * height; i++) {
-            int y = Math.floorDiv(i, width);
-            int x = i - (width * y);
-            byteToHide = Byte.toUnsignedInt(secret.getPixel(x, y));
+            byteToHide = Byte.toUnsignedInt(secret.getPixel(i));
             bitGetter = 0x1;
             for (int k = 0; k < 8; k++) {
                 bitToHide = byteToHide & bitGetter;
@@ -43,21 +41,13 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
             if (i >= bitsToHide.length) {
                 return shade;
             }
-            int y = Math.floorDiv(i, shadeWidth);
-            int x = i - (shadeWidth * y);
 
-            shadeByte = Byte.toUnsignedInt(shade.getPixel(x, y));
-            try {
-                bitToHide = bitsToHide[i];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                System.out.println(i);
-                System.out.println("(" + x + ", " + y + ")");
-                throw new RuntimeException();
-            }
+            shadeByte = Byte.toUnsignedInt(shade.getPixel(i));
+            bitToHide = bitsToHide[i];
             if (bitToHide == 1) {
-                shade.setPixel(x, y, (byte) ((shadeByte | bitToHide) & 0xFF));
+                shade.setPixel(i, (byte) ((shadeByte | bitToHide) & 0xFF));
             } else {
-                shade.setPixel(x, y, (byte) (shadeByte & 0xFE));
+                shade.setPixel(i, (byte) (shadeByte & 0xFE));
             }
         }
 
@@ -86,9 +76,7 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
                 break;
             }
 
-            int y = Math.floorDiv(i, shadeWidth);
-            int x = i - (shadeWidth * y);
-            hiddenBits[i] = Byte.toUnsignedInt(shade.getPixel(x, y)) & bitGetter;
+            hiddenBits[i] = Byte.toUnsignedInt(shade.getPixel(i)) & bitGetter;
         }
 
         for (int i = 0; i < width * height; i++) {
@@ -96,9 +84,7 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
             for (int k = 7; k >= 0; k--) {
                 hiddenPixel = (hiddenPixel << 1 | hiddenBits[i * 8 + k]);
             }
-            int y = Math.floorDiv(i, width);
-            int x = i - (width * y);
-            secret.setPixel(x, y, (byte) (hiddenPixel & 0xFF));
+            secret.setPixel(i, (byte) (hiddenPixel & 0xFF));
         }
 
         return secret;

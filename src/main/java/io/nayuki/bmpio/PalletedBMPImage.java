@@ -52,12 +52,26 @@ public class PalletedBMPImage extends BMPImage {
 		return pixels[y * getWidth() + x];
 	}
 
+	public byte getPixel(int index) {
+	    if (index >= pixels.length) {
+	        throw new IndexOutOfBoundsException();
+        }
+        return pixels[index];
+    }
+
     public void setPixel(int x, int y, byte content) {
 		if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight() || (content & 0xFF) >= palette.length) {
             throw new IndexOutOfBoundsException();
         }
 		pixels[y * getWidth() + x] = content;
 	}
+
+	public void setPixel(int index, byte content) {
+        if (index >= pixels.length || (content & 0xFF) >= palette.length) {
+            throw new IndexOutOfBoundsException();
+        }
+        pixels[index] = content;
+    }
 
 	public int[] getPalette() {
 	    return palette;
