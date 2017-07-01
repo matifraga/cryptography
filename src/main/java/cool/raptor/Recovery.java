@@ -50,8 +50,7 @@ public class Recovery implements Algorithm {
         for (PalletedBMPImage image : images) {
             height = (k == 8) ? image.getHeight() : image.getSecretHeight();
             width = (k == 8) ? image.getWidth() : image.getSecretWidth();
-            int shadowWidth = (k == 8) ? width : (int) Math.ceil((1.0*width)/(1.0*k));
-            shadows.put(image.getOrder(), steganography.recover(image, shadowWidth, height));
+            shadows.put(image.getOrder(), steganography.recover(image, (int) Math.ceil((1.0*width)/(1.0*k)), height));
         }
         Shamir<PalletedBMPImage> shamir = new EfficientSecretSharing(images.get(0).getSeed(), k, n, M);
         PalletedBMPImage secret = shamir.join(shadows, width, height);

@@ -3,7 +3,6 @@ package cool.raptor;
 import io.nayuki.bmpio.BlackAndWhiteBMPImage;
 import io.nayuki.bmpio.PalletedBMPImage;
 
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -96,12 +95,14 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
     public PalletedBMPImage join(Map<Integer, PalletedBMPImage> shades, int width, int height) {
         System.out.println();
         System.out.println("RECUPERANDO EL SECRETO");
+
         int shadeHeight = 0;
         int shadeWidth = 0;
 
         for (Integer key : shades.keySet()) {
             shadeHeight = shades.get(key).getHeight();
             shadeWidth = shades.get(key).getWidth();
+            break;
         }
 
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
