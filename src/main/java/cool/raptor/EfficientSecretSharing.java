@@ -30,7 +30,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
         int height = secret.getHeight();
         System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
         int shadeHeight = height;
-        int shadeWidth = (int) Math.ceil((1.0*width) / (1.0*k));
+        int shadeWidth = (int) Math.ceil((1.0 * width) / (1.0 * k));
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
         int[] permutationTable = new int[width * height];
         Random random = new Random();
@@ -106,9 +106,6 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
         System.out.println("Tamaño de las sombras: " + shadeWidth + "x" + shadeHeight);
 
-//        int height = shadeHeight;
-//        int width = shadeWidth * k;
-
         System.out.println("Tamaño de la imágen secreta: " + width + "x" + height);
 
         PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
@@ -147,6 +144,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
 
             }
         }
+
         return secret;
     }
 
