@@ -65,6 +65,7 @@ public class EfficientSecretSharing implements Shamir<PalletedBMPImage> {
                     }
                 }
             }
+
             Polynomial poly = new Polynomial(coefs);
 
             i = 1;

@@ -19,6 +19,10 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
 
         System.out.println("Tamaño de la portadora: " + shadeWidth + "x" + shadeHeight);
 
+        if (shadeHeight * shadeWidth < height * width * 8) {
+            System.out.println("La imágen portadora es muy chica puede que sólo se esconda parte del secreto");
+        }
+
         int bitGetter;
         int bitToHide;
         int shadeByte;
@@ -65,6 +69,10 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
 
         System.out.println("Tamaño de la portadora: " + shadeWidth + "x" + shadeHeight);
 
+        if (shadeHeight * shadeWidth <= height * width * 8) {
+            System.out.println("La imágen portadora es muy chica puede que sólo se recupere parte del secreto");
+        }
+
         PalletedBMPImage secret = new BlackAndWhiteBMPImage(width, height);
 
         int bitGetter = 0x1;
@@ -75,7 +83,6 @@ public class BmpSteganography implements Steganography<PalletedBMPImage> {
             if (i >= hiddenBits.length) {
                 break;
             }
-
             hiddenBits[i] = Byte.toUnsignedInt(shade.getPixel(i)) & bitGetter;
         }
 

@@ -39,9 +39,7 @@ public class Distribution implements Algorithm {
         if (images.size() < n) {
             return Boolean.FALSE;
         }
-//        if (secret.getHeight() % k != 0) {
-//            return Boolean.FALSE;
-//        }
+
         return Boolean.TRUE;
     }
 

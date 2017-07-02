@@ -41,7 +41,7 @@ public class App {
         String dir = arguments.getOrDefault("dir", ".") + File.separator;
         List<File> files = Arrays.asList(new File(dir).listFiles()).stream().filter(file -> file.getName().endsWith(".bmp")).collect(Collectors.toList());
         Integer n = Integer.valueOf((String) arguments.getOrDefault("n", String.valueOf(files.size())));
-        if (files.size() < n) throw new IllegalArgumentException("Invalid number of images in directory: " + dir);
+        if (files.size() < k) throw new IllegalArgumentException("Invalid number of images in directory: " + dir);
         if (!secret.endsWith(".bmp")) throw new IllegalArgumentException("Invalid secret image");
         if (n < 2) throw new IllegalArgumentException("Invalid number of images to distribute to");
         if (k < 2 || k > n) throw new IllegalArgumentException("Invalid scheme(k,n)");
